@@ -1,66 +1,64 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using ERP.Api.Repositories;
-using ERPSystem.API.Models;
+﻿using AutoMapper;
+using ERPSystem.API.DTOs;
+using ERPSystem.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/[controller]")]
 [ApiController]
 public class ClientController : ControllerBase
 {
-    private readonly ClientRepository _clientRepository;
+    private readonly IClientService _clientService;
+    private readonly IMapper _mapper;
 
-    public ClientController(ClientRepository clientRepository)
+    public ClientController(IClientService clientService, IMapper mapper)
     {
-        _clientRepository = clientRepository;
+        _clientService = clientService;
+        _mapper = mapper;
     }
 
     // Obtener todos los clientes
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Client>>> GetClients()
+    public async Task<ActionResult<IEnumerable<ClientDto>>> GetClients()
     {
-        var clients = await _clientRepository.GetAllClientsAsync();
-        return Ok(clients);
+        var clientsDto = await _clientService.GetAllClientsAsync();
+        return Ok(clientsDto);
     }
 
-    // Obtener un cliente por ID
+
     [HttpGet("{id}")]
-    public async Task<ActionResult<Client>> GetClientById(int id)
+    public async Task<ActionResult<ClientDto>> GetClientById(int id)
     {
-        var client = await _clientRepository.GetClientByIdAsync(id);
-        if (client == null)
+        var clientDto = await _clientService.GetClientByIdAsync(id);
+        if (clientDto == null)
         {
             return NotFound();
         }
-        return Ok(client);
+        return Ok(clientDto);
     }
 
-    // Crear un nuevo cliente
     [HttpPost]
-    public async Task<ActionResult<Client>> AddClient(Client client)
+    public async Task<ActionResult<ClientDto>> AddClient(ClientDto clientDto)
     {
-        client.CreatedAt = DateTime.Now;
-        var newClientId = await _clientRepository.AddClientAsync(client);
-        client.Id = newClientId;
-        return CreatedAtAction(nameof(GetClientById), new { id = client.Id }, client);
+        var newClientId = await _clientService.AddClientAsync(clientDto);
+        clientDto.Id = newClientId;
+        return CreatedAtAction(nameof(GetClientById), new { id = clientDto.Id }, clientDto);
     }
 
-    // Actualizar un cliente existente
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateClient(int id, Client client)
+    public async Task<IActionResult> UpdateClient(int id, ClientDto clientDto)
     {
-        if (id != client.Id)
+        if (id != clientDto.Id)
         {
             return BadRequest("Client ID mismatch");
         }
 
-        var clientExists = await _clientRepository.GetClientByIdAsync(id);
+        var clientExists = await _clientService.GetClientByIdAsync(id);
         if (clientExists == null)
         {
             return NotFound();
         }
 
-        var result = await _clientRepository.UpdateClientAsync(client);
+        var result = await _clientService.UpdateClientAsync(clientDto);
         if (!result)
         {
             return StatusCode(500, "Error updating client");
@@ -73,13 +71,13 @@ public class ClientController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteClient(int id)
     {
-        var clientExists = await _clientRepository.GetClientByIdAsync(id);
+        var clientExists = await _clientService.GetClientByIdAsync(id);
         if (clientExists == null)
         {
             return NotFound();
         }
 
-        var result = await _clientRepository.DeleteClientAsync(id);
+        var result = await _clientService.DeleteClientAsync(id);
         if (!result)
         {
             return StatusCode(500, "Error deleting client");

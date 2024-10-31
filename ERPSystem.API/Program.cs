@@ -1,18 +1,24 @@
-
 using ERP.Api.Repositories;
+using ERPSystem.API.Profiles;
+using ERPSystem.API.Repositories;
+using ERPSystem.API.Services;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddScoped<ClientRepository>(); // Registro del repositorio 
+builder.Services.AddScoped<IClientRepository, ClientRepository>();
+builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddAutoMapper(typeof(ClientProfile));
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configuraci髇 de la cadena de conexi髇
+// Configuraci贸n de la cadena de conexi贸n
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
@@ -25,6 +31,26 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Configuraci贸n global de manejo de excepciones
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+        var error = context.Features.Get<IExceptionHandlerFeature>();
+        if (error != null)
+        {
+            // Respuesta JSON en caso de error
+            await context.Response.WriteAsync(new
+            {
+                StatusCode = context.Response.StatusCode,
+                Message = "Ocurri贸 un error interno en el servidor."
+            }.ToString());
+        }
+    });
+});
 
 app.UseHttpsRedirection();
 

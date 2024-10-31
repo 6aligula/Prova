@@ -1,14 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.Data.SqlClient;
-using System.Threading.Tasks;
 using Dapper;
 using ERPSystem.API.Models;
-using Microsoft.Extensions.Configuration;
+using ERPSystem.API.Repositories;
 
 namespace ERP.Api.Repositories
 {
-    public class ClientRepository
+    public class ClientRepository : IClientRepository
     {
         private readonly IConfiguration _configuration;
 
