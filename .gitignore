@@ -1,0 +1,71 @@
+# Archivos generados por el entorno de Visual Studio
+.vscode/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Binarios y compilaciones
+bin/
+obj/
+**/bin
+**/obj
+**/Debug/
+**/Release/
+
+# Archivos de configuración específicos del entorno
+appsettings.*.json
+appsettings.Development.json
+
+# Paquetes de NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# Directorios de publicación
+publish/
+wwwroot/
+logs/
+
+# Archivos temporales y de caché
+*.tmp
+*.log
+*.lock
+*.pid
+*.gz
+*.DS_Store
+Thumbs.db
+
+# Archivos de Docker y contenedores
+Dockerfile
+docker-compose.yml
+docker-compose.*.yml
+
+# Archivos generados por Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# Configuración de Rider
+.idea/
+
+# Archivos generados por Entity Framework
+Migrations/
+
+# Archivos de seguridad o claves de acceso
+secrets.json
+
+# Carpetas de publicación locales
+publish/
+artifacts/
+
+# Archivos generados por compilación para servicios en la nube
+*.cloudconfig
+
+# Certificados de desarrollo
+*.pfx
+*.cer
+
+# Para entornos de pruebas locales o almacenamiento de datos
+TestResults/
