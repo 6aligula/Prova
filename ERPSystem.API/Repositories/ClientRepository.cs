@@ -24,5 +24,42 @@ namespace ERP.Api.Repositories
                 return await db.QueryAsync<Client>("SELECT * FROM Client");
             }
         }
+
+        public async Task<Client> GetClientByIdAsync(int id)
+        {
+            using (IDbConnection db = new SqlConnection(_configuration.GetConnectionString("ERPDatabase")))
+            {
+                return await db.QuerySingleOrDefaultAsync<Client>("SELECT * FROM Client WHERE Id = @Id", new { Id = id });
+            }
+        }
+
+        public async Task<int> AddClientAsync(Client client)
+        {
+            using (IDbConnection db = new SqlConnection(_configuration.GetConnectionString("ERPDatabase")))
+            {
+                var sql = "INSERT INTO Client (Name, Email, Phone, CreatedAt) VALUES (@Name, @Email, @Phone, @CreatedAt); SELECT CAST(SCOPE_IDENTITY() as int)";
+                return await db.ExecuteScalarAsync<int>(sql, client);
+            }
+        }
+
+        public async Task<bool> UpdateClientAsync(Client client)
+        {
+            using (IDbConnection db = new SqlConnection(_configuration.GetConnectionString("ERPDatabase")))
+            {
+                var sql = "UPDATE Client SET Name = @Name, Email = @Email, Phone = @Phone WHERE Id = @Id";
+                var rowsAffected = await db.ExecuteAsync(sql, client);
+                return rowsAffected > 0;
+            }
+        }
+
+        public async Task<bool> DeleteClientAsync(int id)
+        {
+            using (IDbConnection db = new SqlConnection(_configuration.GetConnectionString("ERPDatabase")))
+            {
+                var sql = "DELETE FROM Client WHERE Id = @Id";
+                var rowsAffected = await db.ExecuteAsync(sql, new { Id = id });
+                return rowsAffected > 0;
+            }
+        }
     }
 }
