@@ -1,8 +1,5 @@
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using ERP.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,18 +8,19 @@ namespace ERP.Web.Controllers
     public class HomeController : Controller
     {
         private readonly IHttpClientFactory _clientFactory;
-        private const string ApiUrl = "https://localhost:7143/api/client";
+        private readonly string _apiUrl;
 
-        public HomeController(IHttpClientFactory clientFactory)
+        public HomeController(IHttpClientFactory clientFactory, IConfiguration configuration)
         {
             _clientFactory = clientFactory;
+            _apiUrl = configuration["ApiSettings:BaseUrl"]; // Leer URL de la API desde appsettings.json
         }
 
         // Obtener todos los clientes
         public async Task<IActionResult> Index()
         {
             var client = _clientFactory.CreateClient();
-            var response = await client.GetAsync(ApiUrl);
+            var response = await client.GetAsync(_apiUrl);
 
             if (!response.IsSuccessStatusCode) return View(new List<Client>());
 
@@ -50,7 +48,7 @@ namespace ERP.Web.Controllers
             client.CreatedAt = DateTime.Now;
 
             var content = new StringContent(JsonSerializer.Serialize(client), Encoding.UTF8, "application/json");
-            var response = await clientHttp.PostAsync(ApiUrl, content);
+            var response = await clientHttp.PostAsync(_apiUrl, content);
 
             if (response.IsSuccessStatusCode) return RedirectToAction(nameof(Index));
 
@@ -61,7 +59,7 @@ namespace ERP.Web.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var clientHttp = _clientFactory.CreateClient();
-            var response = await clientHttp.GetAsync($"{ApiUrl}/{id}");
+            var response = await clientHttp.GetAsync($"{_apiUrl}/{id}");
 
             if (!response.IsSuccessStatusCode) return NotFound();
 
@@ -81,7 +79,7 @@ namespace ERP.Web.Controllers
         {
             var clientHttp = _clientFactory.CreateClient();
             var content = new StringContent(JsonSerializer.Serialize(client), Encoding.UTF8, "application/json");
-            var response = await clientHttp.PutAsync($"{ApiUrl}/{id}", content);
+            var response = await clientHttp.PutAsync($"{_apiUrl}/{id}", content);
 
             if (response.IsSuccessStatusCode) return RedirectToAction(nameof(Index));
 
@@ -92,7 +90,7 @@ namespace ERP.Web.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var clientHttp = _clientFactory.CreateClient();
-            var response = await clientHttp.DeleteAsync($"{ApiUrl}/{id}");
+            var response = await clientHttp.DeleteAsync($"{_apiUrl}/{id}");
 
             return RedirectToAction(nameof(Index));
         }
