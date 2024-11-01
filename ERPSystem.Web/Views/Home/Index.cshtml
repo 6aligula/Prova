@@ -20,12 +20,17 @@
                     <td>@client.Email</td>
                     <td>@client.Phone</td>
                     <td>@client.CreatedAt.ToString("yyyy-MM-dd")</td>
-                    <td>
-                        <div class="d-flex gap-2">
-                            <a href="@Url.Action("Edit", new { id = client.Id })" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="@Url.Action("Delete", new { id = client.Id })" class="btn btn-danger btn-sm">Eliminar</a>
-                        </div>
-                    </td>
+                <td>
+                    <div class="d-flex gap-2">
+                        <a href="@Url.Action("Edit", new { id = client.Id })" class="btn btn-warning btn-sm">Editar</a>
+
+                        <!-- Formulario para eliminar un cliente -->
+                        <form asp-action="Delete" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este cliente?');">
+                            <input type="hidden" name="id" value="@client.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </div>
+                </td>
 
                 </tr>
         }

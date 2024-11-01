@@ -2,31 +2,33 @@
 
 <h2 class="my-4">Agregar Cliente</h2>
 
+<!-- Formulario de creación de cliente -->
 <form asp-action="Create" method="post" class="form">
-    <!-- Resumen de validación para errores generales del modelo -->
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
     <div class="mb-3">
         <label class="form-label">Nombre:</label>
         <input asp-for="Name" class="form-control" />
-        <!-- Muestra el error específico de "Name" -->
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Email:</label>
         <input asp-for="Email" class="form-control" />
-        <!-- Muestra el error específico de "Email" -->
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Teléfono:</label>
         <input asp-for="Phone" class="form-control" />
-        <!-- Muestra el error específico de "Phone" -->
         <span asp-validation-for="Phone" class="text-danger"></span>
     </div>
 
+    <!-- Botón de envío directo al controlador -->
     <button type="submit" class="btn btn-success">Guardar</button>
     <a href="@Url.Action("Index")" class="btn btn-secondary">Volver a la lista</a>
 </form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

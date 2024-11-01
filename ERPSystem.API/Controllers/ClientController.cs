@@ -2,6 +2,7 @@
 using ERPSystem.API.DTOs;
 using ERPSystem.API.Services;
 using Microsoft.AspNetCore.Mvc;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -39,10 +40,22 @@ public class ClientController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ClientDto>> AddClient(ClientDto clientDto)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                );
+
+            return BadRequest(new { errors });
+        }
+
         var newClientId = await _clientService.AddClientAsync(clientDto);
         clientDto.Id = newClientId;
         return CreatedAtAction(nameof(GetClientById), new { id = clientDto.Id }, clientDto);
     }
+
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateClient(int id, ClientDto clientDto)
